@@ -10,6 +10,7 @@
 <body>
 
 <button id="request">发出请求</button>
+<button id="request-jsonp">发出请求(jsonp)</button>
 <div id="container"></div>
 
 <script type="text/javascript">
@@ -22,18 +23,32 @@ $(function(){
 	}); */
 	
 	$('#request').click(function(){
+		//不要一直append，注意删除以前的<script>标签
+		$('script[src="http:\/\/localhost\/jsonp-site1\/user\/profile\/1?callback=showData"]').remove();
 		$('head').append($('<script src="http://localhost/jsonp-site1/user/profile/1?callback=showData"><\/script>'));
+	});
+	
+	$('#request-jsonp').click(function(){
+		$.ajax({
+			url: "http://localhost/jsonp-site1/user/profile/1",
+			type: "GET",
+			dataType: "jsonp",
+			jsonpCallback: "showData",
+			success: function(result){
+				showData(result);
+			}
+		});
 	});
 	
 });
 function showData(result){
   var $container = $('#container');
+  $container.children().hide(500);
   $container.append($('<p></p>').text('姓名：' + result.name));
   $container.append($('<p></p>').text('年龄：' + result.age ));
   $container.append($('<p></p>').text('简述：' + result.description));
 }
 </script>
-
 
 </body>
 </html>
